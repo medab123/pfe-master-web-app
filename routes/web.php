@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\Servers\CreateServerPageController;
+use App\Http\Controllers\Dashboard\Servers\DestroyServerController;
 use App\Http\Controllers\Dashboard\Servers\ListServersController;
 use App\Http\Controllers\Dashboard\Servers\StoreServerController;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,9 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::get('servers', ListServersController::class)->name('servers.index');
-Route::get('/servers/create', CreateServerPageController::class)->name('servers.create');
-Route::post('/servers', StoreServerController::class)->name('servers.store');
+Route::prefix('servers')->name('servers.')->group(function () {
+    Route::get('/', ListServersController::class)->name('index');
+    Route::get('/create', CreateServerPageController::class)->name('create');
+    Route::post('/', StoreServerController::class)->name('store');
+    Route::delete('/{id}', DestroyServerController::class)->name('destroy');
+});

@@ -1,48 +1,100 @@
 <script setup lang="ts">
 import DefaultLayout from "@/layouts/default-layout/DefaultLayout.vue";
-import type { ListServersViewModel } from "@/types/generated";
-import { router } from '@inertiajs/vue3';
+import type {ListServersViewModel} from "@/types/generated";
+import {router, useForm} from "@inertiajs/vue3";
+import Swal from "sweetalert2";
+import {ref} from "vue";
 
 const props = defineProps<ListServersViewModel>();
 
-// Add logic here if you need to handle adding a new server
+const deleteForm = useForm({});
+const loading = ref<number | null>(null);
+
 const goToAddServerPage = () => {
-    router.visit(route('servers.create')); // Navigate to add server page
+    router.visit(route("servers.create"));
+};
+
+const deleteServer = (serverId: number) => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            loading.value = serverId;
+            deleteForm.delete(route("servers.destroy", {id: serverId}), {
+                onFinish: () => {
+                    loading.value = null;
+                    Swal.fire("Deleted!", "Your server has been deleted.", "success");
+                },
+                onError: () => {
+                    loading.value = null;
+                    Swal.fire("Error!", "Something went wrong. Try again.", "error");
+                }
+            });
+        }
+    });
 };
 </script>
 
 <template>
     <DefaultLayout>
         <div class="container py-4">
-            <h1 class="text-center mb-4">Liste des Serveurs</h1>
-            <div class="row">
-                <!-- Add New Server Card -->
-                <div class="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                            <h5 class="card-title text-center">Ajouter un Nouveau Serveur</h5>
-                            <button
-                                class="btn btn-primary mt-3"
-                                @click="goToAddServerPage"
-                            >
-                                Ajouter
-                            </button>
-                        </div>
+            <div class="card mb-5 mb-xl-10">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h3>Serveur List</h3>
                     </div>
                 </div>
+                <div class="card-body">
+                    <div class="row gx-9 gy-6">
+                        <div class="col-xl-6">
+                            <div
+                                class="notice d-flex bg-light-primary rounded border-primary border border-dashed flex-stack h-xl-100 mb-10 p-6">
+                                <div class="d-flex flex-stack flex-grow-1 flex-wrap flex-md-nowrap">
+                                    <div class="mb-3 mb-md-0 fw-semibold">
+                                        <h4 class="text-gray-900 fw-bold">Server Management</h4>
+                                        <div class="fs-6 text-gray-700 pe-7">
+                                            Easily create and manage your servers.
+                                        </div>
+                                    </div>
+                                    <button @click="goToAddServerPage"
+                                            class="btn btn-primary px-6 align-self-center text-nowrap">
+                                        Create new Server
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
 
-                <!-- Existing Server Cards -->
-                <div
-                    v-for="server in props.servers"
-                    :key="server.id"
-                    class="col-12 col-sm-6 col-md-4 col-lg-4 mb-4"
-                >
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ server.name }}</h5>
-                            <p class="card-text"><strong>Hôte:</strong> {{ server.host }}</p>
-
-                            <p class="card-text"><strong>Description:</strong> {{ server.description }}</p>
+                        <div class="col-xl-6" v-for="server in props.servers" :key="server.id">
+                            <div class="card card-dashed h-xl-100 flex-row flex-stack flex-wrap p-6">
+                                <div class="d-flex flex-column py-2">
+                                    <div class="d-flex align-items-center fs-5 fw-bold mb-5">
+                                        {{ server.name }}
+                                        <span class="badge badge-light-success fs-7 ms-2">online</span>
+                                    </div>
+                                    <div class="fs-6 fw-semibold text-gray-600">
+                                        {{ server.host }}
+                                        <br>
+                                        {{ server.description }}
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center py-2">
+                                    <button class="btn btn-sm btn-light btn-active-light-primary me-3"
+                                            @click="deleteServer(server.id)" :disabled="loading === server.id">
+                                        <span v-if="loading !== server.id">Delete</span>
+                                        <span v-else>
+                                            <span class="spinner-border spinner-border-sm align-middle"></span>
+                                            Deleting...
+                                        </span>
+                                    </button>
+                                    <button class="btn btn-sm btn-light btn-active-light-primary">Edit</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,4 +102,3 @@ const goToAddServerPage = () => {
         </div>
     </DefaultLayout>
 </template>
-

@@ -14,11 +14,17 @@ class ServerViewModel extends ViewModel
     {
     }
 
+    public function id(): int
+    {
+        return $this->server->id;
+    }
+
     public function name(): string
     {
         return $this->server->name;
     }
-   public function host(): string
+
+    public function host(): string
     {
         return $this->server->host;
     }
