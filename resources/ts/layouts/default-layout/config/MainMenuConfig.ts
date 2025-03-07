@@ -10,8 +10,8 @@ const MainMenuConfig: Array<MenuItem> = [
         bootstrapIcon: "bi-app-indicator",
       },
       {
-        heading: "layoutBuilder",
-        route: "/builder",
+        heading: "Servers",
+        route: "/servers",
         keenthemesIcon: "switch",
         bootstrapIcon: "bi-layers",
       },
