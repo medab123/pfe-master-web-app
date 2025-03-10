@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Dashboard\Servers;
 
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreServerRequest;
+use App\Jobs\InstallAgentJob;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -15,22 +17,16 @@ class StoreServerController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function __invoke(Request $request)
+    public function __invoke(StoreServerRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'host' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'ssh_login_type' => 'nullable|string',
-            'ssh_user' => 'nullable|string|max:255',
-            'ssh_port' => 'nullable|string|max:255',
-            'ssh_password' => 'nullable|string',
-            'ssh_private_key' => 'nullable|string',
-        ]);
-
+        $validated = $request->validated();
         /** @var User $user */
         $user = auth()->user();
-        $user->company->servers()->create($validated);
+        $server = $user->company->servers()->create($validated);
+
+        if($request->get('auto_agent_install')){
+            InstallAgentJob::dispatch($server);
+        }
 
         return redirect()->route('servers.index')->with('success', 'Server created successfully.');
 

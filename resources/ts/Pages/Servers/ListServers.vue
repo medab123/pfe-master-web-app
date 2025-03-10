@@ -4,15 +4,13 @@ import type {ListServersViewModel} from "@/types/generated";
 import {router, useForm} from "@inertiajs/vue3";
 import Swal from "sweetalert2";
 import {ref} from "vue";
+import CreateAppModal from "@/components/modals/wizards/CreateAppModal.vue";
 
 const props = defineProps<ListServersViewModel>();
 
 const deleteForm = useForm({});
+const selectedServer = ref(null);
 const loading = ref<number | null>(null);
-
-const goToAddServerPage = () => {
-    router.visit(route("servers.create"));
-};
 
 const deleteServer = (serverId: number) => {
     Swal.fire({
@@ -39,9 +37,19 @@ const deleteServer = (serverId: number) => {
         }
     });
 };
+
+const openCreateModal = () => {
+    selectedServer.value = null;
+};
+
+const openEditModal = (server) => {
+    selectedServer.value = server;
+};
+
 </script>
 
 <template>
+    <CreateAppModal :server="selectedServer"></CreateAppModal>
     <DefaultLayout>
         <div class="container py-4">
             <div class="card mb-5 mb-xl-10">
@@ -62,7 +70,9 @@ const deleteServer = (serverId: number) => {
                                             Easily create and manage your servers.
                                         </div>
                                     </div>
-                                    <button @click="goToAddServerPage"
+                                    <button @click="openCreateModal"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#kt_modal_create_app"
                                             class="btn btn-primary px-6 align-self-center text-nowrap">
                                         Create new Server
                                     </button>
@@ -92,7 +102,12 @@ const deleteServer = (serverId: number) => {
                                             Deleting...
                                         </span>
                                     </button>
-                                    <button class="btn btn-sm btn-light btn-active-light-primary">Edit</button>
+                                    <button class="btn btn-sm btn-light btn-active-light-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#kt_modal_create_app"
+                                            @click="openEditModal(server)">
+                                        Edit
+                                    </button>
                                 </div>
                             </div>
                         </div>

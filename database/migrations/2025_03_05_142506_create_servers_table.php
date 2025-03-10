@@ -16,12 +16,15 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('host');
+            $table->string('installed_os')->default('ubuntu');
             $table->text('description')->nullable();
             $table->string('ssh_login_type')->nullable();
             $table->string('ssh_user')->nullable();
             $table->string('ssh_port')->nullable();
             $table->string('ssh_password')->nullable();
             $table->string('ssh_private_key')->nullable();
+            $table->dateTime('agent_installed_at')->nullable();
+            $table->string('status')->default('offline');// online , offline
             $table->timestamps();
         });
     }

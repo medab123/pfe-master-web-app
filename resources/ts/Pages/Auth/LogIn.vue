@@ -10,6 +10,7 @@
                     <input
                         class="form-control form-control-lg form-control-solid"
                         type="email"
+                        name="email"
                         v-model="form.email"
                     />
                     <div class="fv-plugins-message-container">
@@ -28,6 +29,7 @@
                     <input
                         class="form-control form-control-lg form-control-solid"
                         type="password"
+                        name="password"
                         v-model="form.password"
                         autocomplete="off"
                     />

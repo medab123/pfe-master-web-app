@@ -111,7 +111,7 @@ const formInitData = ref<ICreateApp>(formData.value);
 
 const createAppSchema = [
   Yup.object({
-    appName: Yup.string().required().label("App name"),
+    appName: Yup.string().required().label("Server name"),
     category: Yup.string().required().label("Category"),
   }),
   Yup.object({

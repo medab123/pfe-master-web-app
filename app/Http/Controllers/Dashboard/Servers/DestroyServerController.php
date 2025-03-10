@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Dashboard\Servers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class DestroyServerController extends Controller
 {
@@ -15,12 +16,12 @@ class DestroyServerController extends Controller
         $user = auth()->user();
         $server = $user->company->servers()->findOrFail($serverId);
         if(!$server){
-            return redirect()->route('servers.index')->with('error', 'Server not found.');
+            return Inertia::location(route('servers.index'));
         }
 
         $server->delete();
 
-        return redirect()->route('servers.index')->with('success', 'Server Deleted successfully.');
+        return Inertia::location(route('servers.index'));
 
     }
 }
